@@ -7,7 +7,7 @@ using Alchemy;
 using Alchemy.Classes;
 using Newtonsoft.Json;
 
-namespace EllApp_server.Classes
+namespace EllappServer.Classes
 {
     class Session
     {

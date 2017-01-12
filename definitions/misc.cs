@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using EllApp_server.Classes;
+using EllappServer.Classes;
 
-namespace EllApp_server.definitions
+namespace EllappServer.definitions
 {
     class Misc
     {

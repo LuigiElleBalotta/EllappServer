@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LappaPluralization", "LappaPluralization\LappaPluralization.csproj", "{D7B16465-23BC-41D1-B6ED-61A3509FE19B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ArchitectureIndependent = Debug|ArchitectureIndependent
+		Release|ArchitectureIndependent = Release|ArchitectureIndependent
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7B16465-23BC-41D1-B6ED-61A3509FE19B}.Debug|ArchitectureIndependent.ActiveCfg = Debug|Any CPU
+		{D7B16465-23BC-41D1-B6ED-61A3509FE19B}.Debug|ArchitectureIndependent.Build.0 = Debug|Any CPU
+		{D7B16465-23BC-41D1-B6ED-61A3509FE19B}.Release|ArchitectureIndependent.ActiveCfg = Release|Any CPU
+		{D7B16465-23BC-41D1-B6ED-61A3509FE19B}.Release|ArchitectureIndependent.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

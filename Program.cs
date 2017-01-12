@@ -7,11 +7,11 @@ using Alchemy.Classes;
 using System.Collections.Concurrent;
 using System.Threading;
 using Newtonsoft.Json;
-using EllApp_server.Classes;
-using EllApp_server.definitions;
+using EllappServer.Classes;
+using EllappServer.definitions;
 using System.Diagnostics;
 
-namespace EllApp_server
+namespace EllappServer
 {
 	class Program
 	{
@@ -22,137 +22,147 @@ namespace EllApp_server
 
 		static void Main(string[] args)
 		{
-			// instantiate a new server - acceptable port and IP range,
-			// and set up your methods.
 
-			var aServer = new WebSocketServer(Convert.ToInt16(config.getValue("serverport")), System.Net.IPAddress.Any)
-			{
-				OnReceive = OnReceive,
-				OnSend = OnSend,
-				OnConnected = OnConnect,
-				OnDisconnect = OnDisconnect,
-				TimeOut = new TimeSpan(0, 5, 0)
-			};
-			aServer.Start();
+            var dbConnString = Database.CreateConnectionString(config.getValue("mysql_host"), config.getValue("mysql_user"), config.getValue("mysql_password"), config.getValue("mysql_db"), 3306, 10, 50, LappaORM.DatabaseType.MySql);
+            if(Database.EllappDB.Initialize(dbConnString, LappaORM.DatabaseType.MySql))
+            {
+			    // instantiate a new server - acceptable port and IP range,
+			    // and set up your methods.
 
-
-			Console.ForegroundColor = ConsoleColor.Red;
-			Console.Title = "EllApp WebSocket Server";
-			Console.WriteLine("Running EllApp WebSocket Server ...");
-			Console.WriteLine("[Type \"exit\" and hit enter to stop the server]");
+			    var aServer = new WebSocketServer(Convert.ToInt16(config.getValue("serverport")), System.Net.IPAddress.Any)
+			    {
+				    OnReceive = OnReceive,
+				    OnSend = OnSend,
+				    OnConnected = OnConnect,
+				    OnDisconnect = OnDisconnect,
+				    TimeOut = new TimeSpan(0, 5, 0)
+			    };
+			    aServer.Start();
 
 
-			// Accept commands on the console and keep it alive
-			var command = string.Empty;
-			while (command != "exit")
-			{
-				if (command != "")
-				{
-					switch (command)
-					{
-						case "online":
-							Console.WriteLine("Online Users: " + GetOnlineUsers());
-							foreach (var session in Sessions)
-							{
-								Console.WriteLine("User ID: " + session.GetUser().GetID());
-								Console.WriteLine("User Name: " + session.GetUser().GetUsername());
-								Console.WriteLine("Connected from: " + session.GetContext().ClientAddress);
-								Console.WriteLine("-------------------------------------");
-							}
-							break;
-						case "serverinfo":
-							Console.WriteLine("Listening on: " + aServer.ListenAddress);
-							Console.WriteLine("Port: " + aServer.Port);
-							break;
-						case "gsm": //Global Server Message
-							foreach (var session in Sessions)
-							{
-								Console.WriteLine("Message to send: ");
-								var msg = Console.ReadLine();
-								Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, "", msg, "Server Message", session.GetUser().GetUsername());
-								var message = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, session.GetUser().GetID(), JsonConvert.SerializeObject(c));
-								session.SendMessage(message);
-							}
-							break;
-						case "createaccount":
-							Console.WriteLine("Insert username:");
-							string username = Console.ReadLine();
-							Console.WriteLine("Insert password:");
-							string password = Console.ReadLine();
-							Console.WriteLine("Insert email:");
-							string email = Console.ReadLine();
-							CommandManager.CreateAccount(username, password, email);
-							break;
-						case "fakemessage":
-							Console.WriteLine("Insert the username: ");
-							string uname = Console.ReadLine().ToUpper();
-							bool validChoice = false;
-							do
-							{
-								Console.WriteLine("Single chat or Group Chat? (1 or 2)");
-								int choice = Convert.ToInt16(Console.ReadLine());
-								switch (choice)
-								{
-									case 1:
-										validChoice = true;
-										Console.WriteLine("Insert the destinatary username:");
-										string duname = Console.ReadLine().ToUpper();
-										Console.WriteLine("Insert your message: ");
-										string tmpmessage = Console.ReadLine();
+			    Console.ForegroundColor = ConsoleColor.Red;
+			    Console.Title = "EllApp WebSocket Server";
+			    Console.WriteLine("Running EllApp WebSocket Server ...");
+			    Console.WriteLine("[Type \"exit\" and hit enter to stop the server]");
 
-										int from = Misc.GetUserIDByUsername(uname);
-										int to = Misc.GetUserIDByUsername(duname);
-										string chatroomid = Misc.CreateChatRoomID(to, from);
 
-										Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, chatroomid, tmpmessage, uname, duname);
-										var msg = new MessagePacket(MessageType.MSG_TYPE_CHAT, from, to, JsonConvert.SerializeObject(c));
+			    // Accept commands on the console and keep it alive
+			    var command = string.Empty;
+			    while (command != "exit")
+			    {
+				    if (command != "")
+				    {
+					    switch (command)
+					    {
+						    case "online":
+							    Console.WriteLine("Online Users: " + GetOnlineUsers());
+							    foreach (var session in Sessions)
+							    {
+								    Console.WriteLine("User ID: " + session.GetUser().GetID());
+								    Console.WriteLine("User Name: " + session.GetUser().GetUsername());
+								    Console.WriteLine("Connected from: " + session.GetContext().ClientAddress);
+								    Console.WriteLine("-------------------------------------");
+							    }
+							    break;
+						    case "serverinfo":
+							    Console.WriteLine("Listening on: " + aServer.ListenAddress);
+							    Console.WriteLine("Port: " + aServer.Port);
+							    break;
+						    case "gsm": //Global Server Message
+							    foreach (var session in Sessions)
+							    {
+								    Console.WriteLine("Message to send: ");
+								    var msg = Console.ReadLine();
+								    Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, "", msg, "Server Message", session.GetUser().GetUsername());
+								    var message = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, session.GetUser().GetID(), JsonConvert.SerializeObject(c));
+								    session.SendMessage(message);
+							    }
+							    break;
+						    case "createaccount":
+							    Console.WriteLine("Insert username:");
+							    string username = Console.ReadLine();
+							    Console.WriteLine("Insert password:");
+							    string password = Console.ReadLine();
+							    Console.WriteLine("Insert email:");
+							    string email = Console.ReadLine();
+							    CommandManager.CreateAccount(username, password, email);
+							    break;
+						    case "fakemessage":
+							    Console.WriteLine("Insert the username: ");
+							    string uname = Console.ReadLine().ToUpper();
+							    bool validChoice = false;
+							    do
+							    {
+								    Console.WriteLine("Single chat or Group Chat? (1 or 2)");
+								    int choice = Convert.ToInt16(Console.ReadLine());
+								    switch (choice)
+								    {
+									    case 1:
+										    validChoice = true;
+										    Console.WriteLine("Insert the destinatary username:");
+										    string duname = Console.ReadLine().ToUpper();
+										    Console.WriteLine("Insert your message: ");
+										    string tmpmessage = Console.ReadLine();
 
-										Console.WriteLine($"Sending message to {to} - {duname}");
-										if (Sessions.Any(s => s.GetUser().GetID() == to))
-										{
-											Console.WriteLine("L'utente è nella lista delle sessioni");
-											if (Sessions.First(s => s.GetUser().GetID() == to).GetUser().IsOnline())
-											{
-												Console.WriteLine("L'utente è online");
-												Session session = Sessions.SingleOrDefault(s => s.GetUser().GetID() == to);
-												Console.WriteLine("Sending message to user");
-												session.SendMessage(msg);
-											}
-										}
+										    int from = Misc.GetUserIDByUsername(uname);
+										    int to = Misc.GetUserIDByUsername(duname);
+										    string chatroomid = Misc.CreateChatRoomID(to, from);
 
-										var log = new Log_Manager();
-										log.ChatID = chatroomid;
-										log.content = tmpmessage;
-										log.to_type = ChatType.CHAT_TYPE_USER_TO_USER;
-										log.from = from;
-										log.to = to;
-										log.SaveLog();
-										Console.WriteLine(JsonConvert.SerializeObject(msg));
-										Console.WriteLine("Done.");
-										break;
-									case 2:
-										validChoice = true;
-										Console.WriteLine("Not yet implemented.");
-										break;
-									default:
-										Console.WriteLine("Invalid choice");
-										break;
-								}
-							} while (!validChoice);
-							break;
-						case "clearconsole":
-							Console.Clear();
-							break;
-						default:
-							Console.WriteLine("Unknown command");
-							break;
-					}
-				}
-				command = Console.ReadLine();
-			}
+										    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, chatroomid, tmpmessage, uname, duname);
+										    var msg = new MessagePacket(MessageType.MSG_TYPE_CHAT, from, to, JsonConvert.SerializeObject(c));
 
-			aServer.Stop();
-			Environment.Exit(0);
+										    Console.WriteLine($"Sending message to {to} - {duname}");
+										    if (Sessions.Any(s => s.GetUser().GetID() == to))
+										    {
+											    Console.WriteLine("L'utente è nella lista delle sessioni");
+											    if (Sessions.First(s => s.GetUser().GetID() == to).GetUser().IsOnline())
+											    {
+												    Console.WriteLine("L'utente è online");
+												    Session session = Sessions.SingleOrDefault(s => s.GetUser().GetID() == to);
+												    Console.WriteLine("Sending message to user");
+												    session.SendMessage(msg);
+											    }
+										    }
+
+										    var log = new Log_Manager();
+										    log.ChatID = chatroomid;
+										    log.content = tmpmessage;
+										    log.to_type = ChatType.CHAT_TYPE_USER_TO_USER;
+										    log.from = from;
+										    log.to = to;
+										    log.SaveLog();
+										    Console.WriteLine(JsonConvert.SerializeObject(msg));
+										    Console.WriteLine("Done.");
+										    break;
+									    case 2:
+										    validChoice = true;
+										    Console.WriteLine("Not yet implemented.");
+										    break;
+									    default:
+										    Console.WriteLine("Invalid choice");
+										    break;
+								    }
+							    } while (!validChoice);
+							    break;
+						    case "clearconsole":
+							    Console.Clear();
+							    break;
+						    default:
+							    Console.WriteLine("Unknown command");
+							    break;
+					    }
+				    }
+				    command = Console.ReadLine();
+			    }
+
+			    aServer.Stop();
+			    Environment.Exit(0);
+            }
+            else
+            {
+                Console.WriteLine($"Can't connect to bnet database.");
+                Environment.Exit(0);
+            }
 		}
 
 		public static void OnConnect(UserContext aContext)

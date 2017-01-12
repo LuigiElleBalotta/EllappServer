@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EllApp_server.Classes
+namespace EllappServer.Classes
 {
     class Utility
     {

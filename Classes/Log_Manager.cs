@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using EllApp_server.definitions;
+using EllappServer.definitions;
 
-namespace EllApp_server.Classes
+namespace EllappServer.Classes
 {
     class Log_Manager
     {

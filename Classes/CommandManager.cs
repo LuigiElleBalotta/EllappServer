@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 
-namespace EllApp_server.Classes
+namespace EllappServer.Classes
 {
     class CommandManager
     {

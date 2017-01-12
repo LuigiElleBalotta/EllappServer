@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace EllApp_server.Classes
+namespace EllappServer.Classes
 {
     class Config_Manager
     {
