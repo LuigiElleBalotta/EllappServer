@@ -74,7 +74,7 @@ namespace EllappServer.Classes
             Database.EllappDB.Update<Accounts>((Accounts)this);
         }
 
-        public static List<Chat> GetChats(int AccountID, string ChatRequestID = "")
+        public static List<Chat> GetChats(uint AccountID, string ChatRequestID = "")
         {
             staticconn.Open();
             List<Chat> chats = new List<Chat>();

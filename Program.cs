@@ -286,7 +286,7 @@ namespace EllappServer
 						break;
 					case (int)CommandType.ChatsRequest:
 						Console.WriteLine("Received CHAT REQUEST from AccountID = " + obj.accid + ".");
-						int accountID = obj.accid;
+						uint accountID = obj.accid;
 						string ChatRequestID = "";
 						if (obj.ChatRequestID != null)
 							ChatRequestID = obj.ChatRequestID;
@@ -295,7 +295,7 @@ namespace EllappServer
 						break;
 					case (int)CommandType.ChatListRequest:
 						Console.WriteLine("Received CHAT LIST REQUEST from AccountID = " + obj.accid + ".");
-						int accountid = obj.accid;
+						uint accountid = obj.accid;
 						string chatlist = JsonConvert.SerializeObject(User.GetChats(accountid, ""));
 						Sessions.First(s => s.GetUser().idAccount == accountid).SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT_REQUEST_LIST_RESPONSE, 0, accountid, chatlist));
 						break;
