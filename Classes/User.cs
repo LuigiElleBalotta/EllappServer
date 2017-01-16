@@ -54,26 +54,12 @@ namespace EllappServer.Classes
                 return false;
         }
 
-        public string GetUsername()
-        {
-            return username;
-        }
-
-        public uint GetID()
-        {
-            return idAccount;
-        }
-
         public bool IsOnline()
         {
-            var res = Database.EllappDB.Where<Accounts>(r => r.idAccount == idAccount);
-            bool onlineBit = false;
-            foreach(Accounts a in res)
-            {
-                onlineBit = a.isOnline;
-            }
+            var res = Database.EllappDB.Single<Accounts>(r => r.idAccount == idAccount);
+            bool onlineBit = res.isOnline;
 
-            return onlineBit != false;
+            return onlineBit;
         }
 
         public void SetOnline()
