@@ -17,7 +17,7 @@ namespace EllappServer.Db
         public long data_creazione { get; set; }
         public DateTime last_connection { get; set; }
         public string last_ip { get; set; }
-        public uint isOnline { get; set; }
+        public bool isOnline { get; set; }
 
     }
 }

@@ -10,13 +10,23 @@ using EllappServer.Db;
 
 namespace EllappServer.Classes
 {
-    class User
+    class User : Accounts
     {
-        uint ID = 0;
-        string username, last_ip, email;
         static Config_Manager conf = new Config_Manager();
-        //static MySqlConnection staticconn = new MySqlConnection("Server=" + conf.getValue("mysql_host") + ";Database=" + conf.getValue("mysql_db") + ";Uid=" + conf.getValue("mysql_user") + ";Pwd=" + conf.getValue("mysql_password") + ";");
-        //MySqlConnection conn = new MySqlConnection("Server=" + conf.getValue("mysql_host") + ";Database=" + conf.getValue("mysql_db") + ";Uid=" + conf.getValue("mysql_user") + ";Pwd=" + conf.getValue("mysql_password") + ";");
+        static MySqlConnection staticconn = new MySqlConnection("Server=" + conf.getValue("mysql_host") + ";Database=" + conf.getValue("mysql_db") + ";Uid=" + conf.getValue("mysql_user") + ";Pwd=" + conf.getValue("mysql_password") + ";");
+        public User(uint _id)
+        {
+            var res = Database.EllappDB.Single<Accounts>(r => r.idAccount == _id);
+            idAccount = res.idAccount;
+            username = res.username;
+            password = res.password;
+            email = res.email;
+            data_creazione = res.data_creazione;
+            last_connection = res.last_connection;
+            last_ip = res.last_ip;
+            isOnline = res.isOnline;
+        }
+
         public User(string _username, string _password)
         {
             username = _username;
@@ -25,19 +35,20 @@ namespace EllappServer.Classes
             byte[] bytehash = sha_pass.ComputeHash(passwordbyte);
             _password = Utility.HexStringFromBytes(bytehash);
 
-            var res = Database.EllappDB.Where<Accounts>(r => r.username == username && r.password == _password);
-
-            foreach(Accounts a in res)
-            {
-                ID = a.idAccount;
-                last_ip = a.last_ip;
-                email = a.email;
-            }
+            var res = Database.EllappDB.Single<Accounts>(r => r.username == username && r.password == _password);
+            idAccount = res.idAccount;
+            username = res.username;
+            password = res.password;
+            email = res.email;
+            data_creazione = res.data_creazione;
+            last_connection = res.last_connection;
+            last_ip = res.last_ip;
+            isOnline = res.isOnline;
         }
 
         public bool Validate()
         {
-            if (ID > 0)
+            if (idAccount > 0)
                 return true;
             else
                 return false;
@@ -50,49 +61,39 @@ namespace EllappServer.Classes
 
         public uint GetID()
         {
-            return ID;
+            return idAccount;
         }
 
         public bool IsOnline()
         {
-            var res = Database.EllappDB.Where<Accounts>(r => r.idAccount == ID);
-            uint onlineBit = 0;
+            var res = Database.EllappDB.Where<Accounts>(r => r.idAccount == idAccount);
+            bool onlineBit = false;
             foreach(Accounts a in res)
             {
                 onlineBit = a.isOnline;
             }
 
-            return onlineBit != 0;
+            return onlineBit != false;
         }
 
         public void SetOnline()
         {
-            /*conn.Open();
-            MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET isOnline = 1 WHERE idAccount = @id;", conn);
-            MySqlParameter idParameter = new MySqlParameter("@id", MySqlDbType.Int32, 0);
-            idParameter.Value = ID;
-            cmd.Parameters.Add(idParameter);
-            cmd.ExecuteNonQuery();
-            conn.Close();*/
+            this.isOnline = true;
+            Database.EllappDB.Update<Accounts>((Accounts)this);
         }
 
         public void SetOffline()
         {
-            /*conn.Open();
-            MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET isOnline = 0 WHERE idAccount = @id;", conn);
-            MySqlParameter idParameter = new MySqlParameter("@id", MySqlDbType.Int32, 0);
-            idParameter.Value = ID;
-            cmd.Parameters.Add(idParameter);
-            cmd.ExecuteNonQuery();
-            conn.Close();*/
+            this.isOnline = true;
+            Database.EllappDB.Update<Accounts>((Accounts)this);
         }
 
         public static List<Chat> GetChats(int AccountID, string ChatRequestID = "")
         {
-            //staticconn.Open();
+            staticconn.Open();
             List<Chat> chats = new List<Chat>();
             if (ChatRequestID == "") //I am requesting only all open chat, not the messages
-            {/*
+            {
                 MySqlCommand cmd = new MySqlCommand("SELECT ChatID as 'chatroom', `from`, content, `to`, `date` FROM log_chat WHERE to_type = 'CHAT_TYPE_USER_TO_USER' AND (`from` = @id or `to` = @id) AND `date` IN (SELECT MAX(`date`) FROM log_chat WHERE ChatID <> '' GROUP BY ChatID) ORDER BY `date` desc;", staticconn);
                 MySqlParameter idParameter = new MySqlParameter("@id", MySqlDbType.Int32, 0);
                 idParameter.Value = AccountID;
@@ -104,7 +105,7 @@ namespace EllappServer.Classes
                     chats.Add(c);
                 }
                 r.Close();
-                staticconn.Close();*/
+                staticconn.Close();
 
                 //var res = Database.EllappDB.Where<Log_Chat>(r => r.to_type == "CHAT_TYPE_USER_TO_USER" && (r.from == AccountID || r.to == AccountID));
 
@@ -112,7 +113,7 @@ namespace EllappServer.Classes
             }
             else
             {
-                /*MySqlCommand cmd = new MySqlCommand("SELECT ChatID as 'chatroom', `from`, content, `to`, `date` FROM log_chat WHERE ChatID = @chatid AND to_type = 'CHAT_TYPE_USER_TO_USER' ORDER BY `date` ASC;", staticconn);
+                MySqlCommand cmd = new MySqlCommand("SELECT ChatID as 'chatroom', `from`, content, `to`, `date` FROM log_chat WHERE ChatID = @chatid AND to_type = 'CHAT_TYPE_USER_TO_USER' ORDER BY `date` ASC;", staticconn);
                 MySqlParameter chatidParameter = new MySqlParameter("@chatid", MySqlDbType.String, 0);
                 chatidParameter.Value = ChatRequestID;
                 cmd.Parameters.Add(chatidParameter);
@@ -123,7 +124,7 @@ namespace EllappServer.Classes
                     chats.Add(c);
                 }
                 r.Close();
-                staticconn.Close();*/
+                staticconn.Close();
                 return chats;
             }
         }
