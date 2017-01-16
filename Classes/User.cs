@@ -87,7 +87,7 @@ namespace EllappServer.Classes
                 MySqlDataReader r = cmd.ExecuteReader();
                 while (r.Read())
                 {
-                    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, r["chatroom"].ToString(), r["content"].ToString(), Misc.GetUsernameByID(Convert.ToInt32(r["from"])).ToString(), Misc.GetUsernameByID(Convert.ToInt32(r["to"])).ToString(), (long)Misc.DateTimeToUnixTimestamp(Convert.ToDateTime(r["date"].ToString())));
+                    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, r["chatroom"].ToString(), r["content"].ToString(), Misc.GetUsernameByID(Convert.ToUInt16(r["from"])).ToString(), Misc.GetUsernameByID(Convert.ToUInt16(r["to"])).ToString(), (long)Misc.DateTimeToUnixTimestamp(Convert.ToDateTime(r["date"].ToString())));
                     chats.Add(c);
                 }
                 r.Close();
@@ -106,7 +106,7 @@ namespace EllappServer.Classes
                 MySqlDataReader r = cmd.ExecuteReader();
                 while(r.Read())
                 {
-                    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, r["chatroom"].ToString(), r["content"].ToString(), Misc.GetUsernameByID(Convert.ToInt32(r["from"])).ToString(), Misc.GetUsernameByID(Convert.ToInt32(r["to"])).ToString(), (long)Misc.DateTimeToUnixTimestamp(Convert.ToDateTime(r["date"].ToString())));
+                    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, r["chatroom"].ToString(), r["content"].ToString(), Misc.GetUsernameByID(Convert.ToUInt16(r["from"])).ToString(), Misc.GetUsernameByID(Convert.ToUInt16(r["to"])).ToString(), (long)Misc.DateTimeToUnixTimestamp(Convert.ToDateTime(r["date"].ToString())));
                     chats.Add(c);
                 }
                 r.Close();
