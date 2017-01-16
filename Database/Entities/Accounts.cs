@@ -7,7 +7,7 @@ using LappaORM;
 
 namespace EllappServer.Db
 {
-    public class Accounts : Entity
+    public class Account : Entity
     {
         [AutoIncrement]
         public uint idAccount { get; set; }

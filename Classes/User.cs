@@ -10,13 +10,16 @@ using EllappServer.Db;
 
 namespace EllappServer.Classes
 {
-    class User : Accounts
+    class User : Account
     {
         static Config_Manager conf = new Config_Manager();
         static MySqlConnection staticconn = new MySqlConnection("Server=" + conf.getValue("mysql_host") + ";Database=" + conf.getValue("mysql_db") + ";Uid=" + conf.getValue("mysql_user") + ";Pwd=" + conf.getValue("mysql_password") + ";");
+
+        public User() { }
+
         public User(uint _id)
         {
-            var res = Database.EllappDB.Single<Accounts>(r => r.idAccount == _id);
+            var res = Database.EllappDB.Single<Account>(r => r.idAccount == _id);
             idAccount = res.idAccount;
             username = res.username;
             password = res.password;
@@ -35,7 +38,7 @@ namespace EllappServer.Classes
             byte[] bytehash = sha_pass.ComputeHash(passwordbyte);
             _password = Utility.HexStringFromBytes(bytehash);
 
-            var res = Database.EllappDB.Single<Accounts>(r => r.username == username && r.password == _password);
+            var res = Database.EllappDB.Single<Account>(r => r.username == username && r.password == _password);
             idAccount = res.idAccount;
             username = res.username;
             password = res.password;
@@ -54,9 +57,14 @@ namespace EllappServer.Classes
                 return false;
         }
 
+        public void CreateAccount()
+        {
+            Database.EllappDB.Add<Account>(this);
+        }
+
         public bool IsOnline()
         {
-            var res = Database.EllappDB.Single<Accounts>(r => r.idAccount == idAccount);
+            var res = Database.EllappDB.Single<Account>(r => r.idAccount == idAccount);
             bool onlineBit = res.isOnline;
 
             return onlineBit;
@@ -65,13 +73,13 @@ namespace EllappServer.Classes
         public void SetOnline()
         {
             this.isOnline = true;
-            Database.EllappDB.Update<Accounts>((Accounts)this);
+            Database.EllappDB.Update<Account>(this);
         }
 
         public void SetOffline()
         {
-            this.isOnline = true;
-            Database.EllappDB.Update<Accounts>((Accounts)this);
+            this.isOnline = false;
+            Database.EllappDB.Update<Account>(this);
         }
 
         public static List<Chat> GetChats(uint AccountID, string ChatRequestID = "")

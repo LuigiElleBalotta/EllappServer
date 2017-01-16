@@ -19,20 +19,12 @@ namespace EllappServer.Classes
             byte[] bytehash = sha_pass.ComputeHash(passwordbyte);
             var hashedpsw = Utility.HexStringFromBytes(bytehash);
 
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO accounts(username, password) VALUES(@username, @password, @email);", conn);
-            MySqlParameter passwordParameter = new MySqlParameter("@password", MySqlDbType.VarChar, 0);
-            MySqlParameter usernameParameter = new MySqlParameter("@username", MySqlDbType.VarChar, 0);
-            MySqlParameter emailParameter = new MySqlParameter("@email", MySqlDbType.VarChar, 0);
-            passwordParameter.Value = hashedpsw.ToUpper();
-            usernameParameter.Value = username.ToUpper();
-            emailParameter.Value = email.ToUpper();
-            cmd.Parameters.Add(usernameParameter);
-            cmd.Parameters.Add(passwordParameter);
-            cmd.Parameters.Add(emailParameter);
-            if(cmd.ExecuteNonQuery() >= 1)
-                Console.WriteLine("Account created.");
-            else
-                Console.WriteLine("Failure creating account.");
+            User u = new User();
+            u.username = username.ToUpper();
+            u.password = hashedpsw.ToUpper();
+            u.email = email;
+
+            u.CreateAccount();
         }
     }
 }
