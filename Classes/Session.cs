@@ -11,11 +11,11 @@ namespace EllappServer.Classes
 {
     class Session
     {
-        int ID;
+        uint ID;
         User user;
         UserContext context;
 
-        public Session(int _id, User _user, UserContext _context)
+        public Session(uint _id, User _user, UserContext _context)
         {
             ID = _id;
             user = _user;

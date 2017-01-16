@@ -46,9 +46,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Database\Accounts.cs" />
-    <Compile Include="Classes\Database\Database.cs" />
-    <Compile Include="Classes\Database\Log_Chat.cs" />
+    <Compile Include="Database\Entities\Accounts.cs" />
+    <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\Entities\Log_Chat.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\Chat.cs" />

@@ -12,10 +12,10 @@ namespace EllappServer.Classes
     {
         public MessageType MessageType;
         public string from;
-        public int to;
+        public uint to;
         public string data;
 
-        public MessagePacket(MessageType _msgtype, int _from, int _to, string _data)
+        public MessagePacket(MessageType _msgtype, uint _from, uint _to, string _data)
         {
             MessageType = _msgtype;
             from = GetUsername(_from);
@@ -23,7 +23,7 @@ namespace EllappServer.Classes
             data = _data;
         }
 
-        private string GetUsername(int id)
+        private string GetUsername(uint id)
         {
             string _from = "";
             if (id != 0)

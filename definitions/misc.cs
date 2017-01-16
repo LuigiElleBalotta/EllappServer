@@ -26,7 +26,7 @@ namespace EllappServer.definitions
                    new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)).TotalSeconds;
         }
 
-        public static string GetUsernameByID(int ID)
+        public static string GetUsernameByID(uint ID)
         {
             if (ID != 0)
             {
@@ -47,7 +47,7 @@ namespace EllappServer.definitions
                 return "Server Message";
         }
 
-        public static int GetUserIDByUsername(string username)
+        public static uint GetUserIDByUsername(string username)
         {
             if (username != "")
             {
@@ -57,9 +57,9 @@ namespace EllappServer.definitions
                 unameParameter.Value = username;
                 cmd.Parameters.Add(unameParameter);
                 MySqlDataReader read = cmd.ExecuteReader();
-                int id = 0;
+                uint id = 0;
                 while (read.Read())
-                    id = Convert.ToInt16(read["idAccount"]);
+                    id = Convert.ToUInt16(read["idAccount"]);
                 read.Close();
                 conn.Close();
                 return id;
@@ -68,7 +68,7 @@ namespace EllappServer.definitions
                 return 0;
         }
 
-        public static string CreateChatRoomID(int param1, int param2)
+        public static string CreateChatRoomID(uint param1, uint param2)
         {
             if (param1 < param2)
                 return param1.ToString() + "-" + param2.ToString();

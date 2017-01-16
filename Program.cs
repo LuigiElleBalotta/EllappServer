@@ -58,8 +58,8 @@ namespace EllappServer
 							    Console.WriteLine("Online Users: " + GetOnlineUsers());
 							    foreach (var session in Sessions)
 							    {
-								    Console.WriteLine("User ID: " + session.GetUser().GetID());
-								    Console.WriteLine("User Name: " + session.GetUser().GetUsername());
+								    Console.WriteLine("User ID: " + session.GetUser().idAccount);
+								    Console.WriteLine("User Name: " + session.GetUser().username);
 								    Console.WriteLine("Connected from: " + session.GetContext().ClientAddress);
 								    Console.WriteLine("-------------------------------------");
 							    }
@@ -73,8 +73,8 @@ namespace EllappServer
 							    {
 								    Console.WriteLine("Message to send: ");
 								    var msg = Console.ReadLine();
-								    Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, "", msg, "Server Message", session.GetUser().GetUsername());
-								    var message = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, session.GetUser().GetID(), JsonConvert.SerializeObject(c));
+								    Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, "", msg, "Server Message", session.GetUser().username);
+								    var message = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, session.GetUser().idAccount, JsonConvert.SerializeObject(c));
 								    session.SendMessage(message);
 							    }
 							    break;
@@ -87,6 +87,13 @@ namespace EllappServer
 							    string email = Console.ReadLine();
 							    CommandManager.CreateAccount(username, password, email);
 							    break;
+                            case "setonline":
+                                Console.WriteLine("AccountID: ");
+                                string id = Console.ReadLine();
+                                uint _id = Convert.ToUInt16(id);
+                                User u = new User(_id);
+                                u.SetOnline();
+                                break;
 						    case "fakemessage":
 							    Console.WriteLine("Insert the username: ");
 							    string uname = Console.ReadLine().ToUpper();
@@ -104,21 +111,21 @@ namespace EllappServer
 										    Console.WriteLine("Insert your message: ");
 										    string tmpmessage = Console.ReadLine();
 
-										    int from = Misc.GetUserIDByUsername(uname);
-										    int to = Misc.GetUserIDByUsername(duname);
+										    uint from = Misc.GetUserIDByUsername(uname);
+										    uint to = Misc.GetUserIDByUsername(duname);
 										    string chatroomid = Misc.CreateChatRoomID(to, from);
 
 										    Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, chatroomid, tmpmessage, uname, duname);
 										    var msg = new MessagePacket(MessageType.MSG_TYPE_CHAT, from, to, JsonConvert.SerializeObject(c));
 
 										    Console.WriteLine($"Sending message to {to} - {duname}");
-										    if (Sessions.Any(s => s.GetUser().GetID() == to))
+										    if (Sessions.Any(s => s.GetUser().idAccount == to))
 										    {
 											    Console.WriteLine("L'utente è nella lista delle sessioni");
-											    if (Sessions.First(s => s.GetUser().GetID() == to).GetUser().IsOnline())
+											    if (Sessions.First(s => s.GetUser().idAccount == to).GetUser().IsOnline())
 											    {
 												    Console.WriteLine("L'utente è online");
-												    Session session = Sessions.SingleOrDefault(s => s.GetUser().GetID() == to);
+												    Session session = Sessions.SingleOrDefault(s => s.GetUser().idAccount == to);
 												    Console.WriteLine("Sending message to user");
 												    session.SendMessage(msg);
 											    }
@@ -204,17 +211,17 @@ namespace EllappServer
 						}
 						else
 						{
-							Session s = new Session(u.GetID(), u, aContext);
+							Session s = new Session(u.idAccount, u, aContext);
 							Sessions.Add(s);
 
-							var loginInfo = new MessagePacket(MessageType.MSG_TYPE_LOGIN_INFO, 0, s.GetUser().GetID(), s.GetUser().GetID().ToString());
+							var loginInfo = new MessagePacket(MessageType.MSG_TYPE_LOGIN_INFO, 0, s.GetUser().idAccount, s.GetUser().idAccount.ToString());
 
 							//Create the welcome message object
 							Chat c = new Chat();
 							c.chattype = ChatType.CHAT_TYPE_GLOBAL_CHAT;
-							c.text = "Benvenuto " + s.GetUser().GetUsername();
+							c.text = "Benvenuto " + s.GetUser().username;
 							string output = JsonConvert.SerializeObject(c);
-							var welcomeMessage = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, s.GetUser().GetID(), output);
+							var welcomeMessage = new MessagePacket(MessageType.MSG_TYPE_CHAT, 0, s.GetUser().idAccount, output);
 							s.GetUser().SetOnline();
 							s.SendMessage(loginInfo);
 							s.SendMessage(welcomeMessage);
@@ -224,8 +231,8 @@ namespace EllappServer
 						Console.WriteLine("MESSAGE PACKET FROM " + aContext.ClientAddress);
 						string messagecontent = obj.Message;
 						ChatType to_type = obj.ToType;
-						int from = obj.From;
-						int to = obj.To;
+						uint from = obj.From;
+						uint to = obj.To;
 						var log = new Log_Manager();
 						log.ChatID = Misc.CreateChatRoomID(from, to);
 						log.content = messagecontent;
@@ -240,14 +247,14 @@ namespace EllappServer
 								var o = 1;
 								foreach (var session in Sessions)
 								{
-									if (session.GetUser().GetID() != from) //Do not send message to ourselves
+									if (session.GetUser().idAccount != from) //Do not send message to ourselves
 									{
-										Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, Misc.CreateChatRoomID(from, session.GetUser().GetID()), messagecontent, Misc.GetUsernameByID(from), Misc.GetUsernameByID(session.GetUser().GetID()));
-										session.SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT, from, session.GetUser().GetID(), JsonConvert.SerializeObject(c)));
+										Chat c = new Chat(ChatType.CHAT_TYPE_GLOBAL_CHAT, Misc.CreateChatRoomID(from, session.GetUser().idAccount), messagecontent, Misc.GetUsernameByID(from), Misc.GetUsernameByID(session.GetUser().idAccount));
+										session.SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT, from, session.GetUser().idAccount, JsonConvert.SerializeObject(c)));
 										StCLog.content = messagecontent;
 										StCLog.to_type = to_type;
 										StCLog.from = from;
-										StCLog.to = session.GetUser().GetID();
+										StCLog.to = session.GetUser().idAccount;
 										StCLog.SaveLog();
 										o++;
 									}
@@ -257,12 +264,12 @@ namespace EllappServer
 							case ChatType.CHAT_TYPE_USER_TO_USER:
 								Console.WriteLine("Received MSG_TYPE_CHAT_WITH_USER packet.");
 								//If the receiving User is online, we can send the message to him, otherwise he will load everything at next login
-								if (Sessions.Any(s => s.GetUser().GetID() == (int)obj.To))
+								if (Sessions.Any(s => s.GetUser().idAccount == (uint)obj.To))
 								{
-									if (Sessions.SingleOrDefault(s => s.GetUser().GetID() == (int)obj.To).GetUser().IsOnline())
+									if (Sessions.SingleOrDefault(s => s.GetUser().idAccount == (int)obj.To).GetUser().IsOnline())
 									{
 										Chat c = new Chat(ChatType.CHAT_TYPE_USER_TO_USER, Misc.CreateChatRoomID(obj.To, obj.From), obj.Message, obj.From, obj.To);
-										Session session = Sessions.SingleOrDefault(s => s.GetUser().GetID() == (int)obj.To);
+										Session session = Sessions.SingleOrDefault(s => s.GetUser().idAccount == (int)obj.To);
 										session.SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT, obj.From, obj.To, JsonConvert.SerializeObject(c)));
 									}
 								}
@@ -284,13 +291,13 @@ namespace EllappServer
 						if (obj.ChatRequestID != null)
 							ChatRequestID = obj.ChatRequestID;
 						string chats = JsonConvert.SerializeObject(User.GetChats(accountID, ChatRequestID));
-						Sessions.First(s => s.GetUser().GetID() == accountID).SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT_REQUEST_RESPONSE, 0, accountID, chats));
+						Sessions.First(s => s.GetUser().idAccount == accountID).SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT_REQUEST_RESPONSE, 0, accountID, chats));
 						break;
 					case (int)CommandType.ChatListRequest:
 						Console.WriteLine("Received CHAT LIST REQUEST from AccountID = " + obj.accid + ".");
 						int accountid = obj.accid;
 						string chatlist = JsonConvert.SerializeObject(User.GetChats(accountid, ""));
-						Sessions.First(s => s.GetUser().GetID() == accountid).SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT_REQUEST_LIST_RESPONSE, 0, accountid, chatlist));
+						Sessions.First(s => s.GetUser().idAccount == accountid).SendMessage(new MessagePacket(MessageType.MSG_TYPE_CHAT_REQUEST_LIST_RESPONSE, 0, accountid, chatlist));
 						break;
 				}
 			}
