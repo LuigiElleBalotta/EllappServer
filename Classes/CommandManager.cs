@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
+using EllappServer.Db;
 
 namespace EllappServer.Classes
 {
@@ -19,12 +20,16 @@ namespace EllappServer.Classes
             byte[] bytehash = sha_pass.ComputeHash(passwordbyte);
             var hashedpsw = Utility.HexStringFromBytes(bytehash);
 
-            User u = new User();
+            Account u = new Account();
             u.username = username.ToUpper();
             u.password = hashedpsw.ToUpper();
             u.email = email;
 
             u.CreateAccount();
+        }
+        public static void SetOnline(Account u)
+        {
+            u.SetOnline();
         }
     }
 }

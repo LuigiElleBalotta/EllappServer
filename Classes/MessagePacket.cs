@@ -18,12 +18,12 @@ namespace EllappServer.Classes
         public MessagePacket(MessageType _msgtype, uint _from, uint _to, string _data)
         {
             MessageType = _msgtype;
-            from = GetUsername(_from);
+            from = GetAccountname(_from);
             to = _to;
             data = _data;
         }
 
-        private string GetUsername(uint id)
+        private string GetAccountname(uint id)
         {
             string _from = "";
             if (id != 0)

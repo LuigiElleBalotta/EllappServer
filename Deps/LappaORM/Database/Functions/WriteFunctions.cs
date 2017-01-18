@@ -89,7 +89,7 @@ namespace LappaORM
             var primaryKeys = type.GetProperties().Where(p => p.HasAttribute<PrimaryKeyAttribute>() || p.Name == "Id" || p.Name == type.Name + "Id").ToArray();
             var builder = new QueryBuilder<TEntity>(querySettings);
             var query = builder.BuildUpdate(entity, properties, primaryKeys);
-
+            Console.WriteLine(query);
             return Execute(query);
         }
 

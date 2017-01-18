@@ -7,7 +7,7 @@ using EllappServer.definitions;
 
 namespace EllappServer.Classes
 {
-    class Chat
+    public class Chat
     {
         public ChatType chattype;
         public string ChatRoom;

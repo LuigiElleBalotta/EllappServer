@@ -47,7 +47,7 @@ namespace EllappServer.definitions
                 return "Server Message";
         }
 
-        public static uint GetUserIDByUsername(string username)
+        public static uint GetAccountIDByUsername(string username)
         {
             if (username != "")
             {

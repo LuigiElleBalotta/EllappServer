@@ -93,6 +93,7 @@ namespace LappaORM
             else
                 query = builder.BuildWhereAll(condition.Body);
 
+            Console.WriteLine(query);
             var data = await SelectAsync(query, Pluralize<TEntity>());
 
             if (data != null)

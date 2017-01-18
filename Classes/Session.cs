@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using Alchemy;
 using Alchemy.Classes;
 using Newtonsoft.Json;
+using EllappServer.Db;
 
 namespace EllappServer.Classes
 {
     class Session
     {
         uint ID;
-        User user;
+        Account account;
         UserContext context;
 
-        public Session(uint _id, User _user, UserContext _context)
+        public Session(uint _id, Account _account, UserContext _context)
         {
             ID = _id;
-            user = _user;
+            account = _account;
             context = _context;
         }
 
@@ -27,9 +28,9 @@ namespace EllappServer.Classes
             return context;
         }
 
-        public User GetUser()
+        public Account GetAccount()
         {
-            return user;
+            return account;
         }
 
         public void SendMessage(MessagePacket pkt)
